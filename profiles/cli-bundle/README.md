@@ -110,6 +110,62 @@ crontab -l | grep -v claude-dream | crontab -
 rm ~/.claude/dream.sh
 ```
 
+## Obsidian vault (workspace compartilhado entre CLIs)
+
+Vault único em `$OBSIDIAN_VAULT_DIR` (default `~/vault`) que todos os CLIs
+(Claude, Codex, Antigravity, Cursor) leem e escrevem. Headless — não precisa
+do app Obsidian no VPS; vault é só markdown em disco. Workstation com app
+Obsidian abre o mesmo vault via git sync.
+
+Habilitar no `.env`:
+```env
+INSTALL_OBSIDIAN=true
+OBSIDIAN_VAULT_DIR=/home/ubuntu/vault
+OBSIDIAN_VAULT_REPO=git@github.com:you/your-vault.git    # opcional
+OBSIDIAN_AUTOSYNC=true                                    # opt-in
+OBSIDIAN_AUTOSYNC_SCHEDULE=*/15 * * * *
+```
+
+Rodar:
+```bash
+bash 08-obsidian.sh
+```
+
+Layout criado:
+```
+~/vault/
+├── .claude/log.md           # Claude Code grava aqui
+├── .codex/log.md            # Codex
+├── .antigravity/log.md      # Antigravity
+├── .cursor/log.md           # Cursor
+├── inbox.md                 # captura rápida, qualquer agente escreve
+├── notes/                   # markdown principal
+├── .obsidian/app.json       # config base (versionada se git)
+└── .gitignore               # ignora workspace.json, cache, .trash/
+```
+
+Acesso por CLI:
+- **Claude Code**: MCP `obsidian-vault` registrado em `06-mcp.sh` (filesystem MCP scoped ao vault). Sem necessidade de `cd`.
+- **Codex / Antigravity / Cursor**: rode com `cdvault` (alias adicionado no `~/.bashrc`) ou via flag de workspace do CLI.
+
+Git auto-sync (opt-in):
+- Cron de user (default `*/15`) faz `git add + commit + pull -X ours + push`
+- **Conflitos**: estratégia `-X ours` — edições locais sempre vencem o remoto
+- Log: `~/vault/.claude/sync.log`
+- Wrapper: `~/.local/bin/obsidian-vault-sync`
+
+Sync manual on-demand:
+```bash
+source ~/.bashrc
+obsidian-vault-sync
+```
+
+Desativar auto-sync:
+```bash
+crontab -l | grep -v obsidian-vault-sync | crontab -
+rm ~/.local/bin/obsidian-vault-sync
+```
+
 ## Manutenção
 ```bash
 claude mcp list                  # ver registrados

@@ -94,6 +94,18 @@ if [[ "${INSTALL_FILESYSTEM:-false}" == "true" ]]; then
   add_mcp fs -- npx -y @modelcontextprotocol/server-filesystem $FS_PATHS
 fi
 
+# --- Obsidian vault (stdio, via filesystem MCP scoped to the vault) ---
+# Installed independently of INSTALL_FILESYSTEM so the broader fs MCP stays
+# off by default while the vault remains accessible.
+if [[ "${INSTALL_OBSIDIAN:-false}" == "true" ]]; then
+  VAULT="${OBSIDIAN_VAULT_DIR:-$HOME/vault}"
+  if [[ -d "$VAULT" ]]; then
+    add_mcp obsidian-vault -- npx -y @modelcontextprotocol/server-filesystem "$VAULT"
+  else
+    echo "WARN: INSTALL_OBSIDIAN=true but vault dir $VAULT missing. Run 08-obsidian.sh first."
+  fi
+fi
+
 echo
 echo "==> MCP registration done. Current servers:"
 claude mcp list
