@@ -28,9 +28,11 @@ bash "$SCRIPT_DIR/02-claude.sh"
 bash "$SCRIPT_DIR/03-codex.sh"
 bash "$SCRIPT_DIR/04-antigravity.sh"
 bash "$SCRIPT_DIR/05-cursor.sh"
+bash "$SCRIPT_DIR/05b-opencode.sh"
 bash "$SCRIPT_DIR/08-obsidian.sh"   # vault skeleton first; MCP step below registers it
 bash "$SCRIPT_DIR/06-mcp.sh"
 bash "$SCRIPT_DIR/07-dream.sh"
+bash "$SCRIPT_DIR/09-plugins.sh"    # plugin marketplaces (Claude headless; others manual hint)
 
 mutex_set "cli-bundle"
 
