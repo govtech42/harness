@@ -5,6 +5,29 @@ Each entry: **what** changed, **why** it was needed, **files** touched.
 
 ---
 
+## 2026-05-25 — v0.3.0 — Test suite + CI/Release workflows
+
+**What**
+- `tests/lint.sh` — `bash -n` + shellcheck on every `.sh` (SC1090/SC1091 ignored for runtime `.env` sourcing).
+- `tests/check_env_completeness.sh` — every `INSTALL_*` toggle and `${VAR}` referenced in a profile's scripts must be documented in that profile's `.env.example`.
+- `tests/test_lib.bats` — 12 unit tests for `lib/common.sh` (`mutex_check`, `mutex_set`, `load_env`, `banner`).
+- `tests/test_launcher.bats` — 5 black-box tests for `./install.sh` (`--help`, `--status`, unknown profile, mutex rejection).
+- `tests/README.md` — how to run locally, what each test covers.
+- `.github/workflows/ci.yml` — three parallel jobs on push/PR (lint, env-completeness, bats). Exposed as `workflow_call`.
+- `.github/workflows/release.yml` — on `v*` tag, runs CI first, extracts notes from `.claude/CHANGELOG.md`, idempotent `gh release create/edit`.
+
+**Why**
+- Manual `bash -n` was the only safety net. One typo merged could break a profile install on a real VPS hours later.
+- `.env.example` drift was a foot-gun — a new `INSTALL_FOO` toggle in code with no `.env.example` entry means operators don't know it exists.
+- Mutex contract is the most security-relevant logic in the repo; deserves explicit tests.
+- Release notes hand-written per tag don't scale; deriving them from `CHANGELOG.md` keeps single source of truth.
+
+**Files**
+- `tests/*` (5 new files)
+- `.github/workflows/ci.yml`, `.github/workflows/release.yml` (new)
+
+---
+
 ## 2026-05-25 — Real upstream commands for openclaw / hermes / paperclip
 
 **What**
