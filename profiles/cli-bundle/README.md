@@ -204,6 +204,29 @@ manual com palpite (padrão Gemini CLI). Sem tentativa automática.
 **Manual hints**: Codex/Cursor/OpenCode imprimem mensagem com comando exato
 pra colar dentro da sessão. Sem CLI flag headless documentada.
 
+### OpenSpec (universal — funciona em qualquer CLI)
+
+[OpenSpec](https://github.com/Fission-AI/OpenSpec) é framework de
+spec-driven development. CLI standalone (`npm i -g @fission-ai/openspec`)
+que cria pasta `openspec/` no projeto com proposals/specs/design/tasks.
+Agentes (Claude, Codex, Cursor, OpenCode, Antigravity) invocam via slash
+commands `/opsx:propose`, `/opsx:plan`, etc.
+
+```env
+INSTALL_OPENSPEC=true
+OPENSPEC_VERSION=latest
+OPENSPEC_TELEMETRY=0       # opt-in: 1
+```
+
+Uso inicial num projeto:
+```bash
+cd ~/myproject
+openspec init
+# depois, dentro de qualquer CLI agente:
+#   /opsx:propose <feature>
+#   /opsx:plan
+```
+
 ### Plugins oficiais da Anthropic (Claude only)
 
 Toggles separados pra cada plugin do marketplace `claude-plugins-official`:

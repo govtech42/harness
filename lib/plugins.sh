@@ -42,6 +42,20 @@ install_claude_plugin() {
   claude_headless "/reload-plugins" || true
 }
 
+# Install OpenSpec — spec-driven development CLI. npm-global; works inside
+# any AI assistant via /opsx:* slash commands (no per-CLI binding).
+# Upstream: https://github.com/Fission-AI/OpenSpec
+install_openspec() {
+  local version="${OPENSPEC_VERSION:-latest}"
+  if ! command -v npm >/dev/null 2>&1; then
+    echo "ERROR: npm not on PATH — OpenSpec requires Node.js."
+    return 1
+  fi
+  echo "==> Installing @fission-ai/openspec@${version} globally"
+  npm install -g "@fission-ai/openspec@${version}"
+  openspec --version 2>/dev/null || true
+}
+
 # Install gstack into a target CLI's skills dir.
 # $1 = host name (claude, opencode, etc.)
 install_gstack_for() {
