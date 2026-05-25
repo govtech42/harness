@@ -5,6 +5,28 @@ Each entry: **what** changed, **why** it was needed, **files** touched.
 
 ---
 
+## 2026-05-25 — v0.6.1 — OpenSpec (spec-driven development CLI)
+
+**What**
+- `lib/plugins.sh` — new `install_openspec()` (npm-global install of `@fission-ai/openspec`).
+- `profiles/cli-bundle/09-plugins.sh` — `INSTALL_OPENSPEC=true` block, installs OpenSpec + appends `OPENSPEC_TELEMETRY=0` to `~/.bashrc` (default off; opt-in by setting `OPENSPEC_TELEMETRY=1`).
+- `profiles/cli-bundle/.env.example` — `INSTALL_OPENSPEC`, `OPENSPEC_VERSION`, `OPENSPEC_TELEMETRY`.
+- `profiles/cli-bundle/README.md` — OpenSpec section with `openspec init` + `/opsx:*` usage.
+- `tests/test_plugins.bats` — 2 new tests (missing-npm error path; correct npm-install dispatch with PATH-isolated stub).
+
+**Why**
+- OpenSpec is universal — any AI CLI (Claude, Codex, Cursor, OpenCode, Antigravity) can invoke it via the `/opsx:*` slash commands once a project has run `openspec init`. No per-CLI binding needed.
+- Single npm-global install + telemetry-off default = same pattern already used for Codex/Claude CLIs.
+
+**Files**
+- `lib/plugins.sh` (+ `install_openspec`)
+- `profiles/cli-bundle/09-plugins.sh` (block)
+- `profiles/cli-bundle/.env.example` (3 vars)
+- `profiles/cli-bundle/README.md` (section)
+- `tests/test_plugins.bats` (2 tests, total 31)
+
+---
+
 ## 2026-05-25 — v0.6.0 — Official plugins (Linear/Slack/etc) + headless browser as base tool
 
 **What**

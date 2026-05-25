@@ -94,6 +94,19 @@ if [[ "${INSTALL_SUPERPOWERS:-false}" == "true" ]]; then
   fi
 fi
 
+# --- OpenSpec (universal: works in any AI CLI via slash commands) ----------
+if [[ "${INSTALL_OPENSPEC:-false}" == "true" ]]; then
+  install_openspec
+  # Telemetry off by default unless operator opts in.
+  if ! grep -q 'OPENSPEC_TELEMETRY' "$HOME/.bashrc" 2>/dev/null; then
+    cat >> "$HOME/.bashrc" <<EOF
+
+# OpenSpec
+export OPENSPEC_TELEMETRY="${OPENSPEC_TELEMETRY:-0}"
+EOF
+  fi
+fi
+
 # --- Official Anthropic marketplace plugins (Claude-only) -----------------
 # These bundle pre-configured MCP servers + skills + slash commands.
 # Richer than the raw MCP registrations in 06-mcp.sh; either can be used.

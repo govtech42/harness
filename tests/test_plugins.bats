@@ -74,6 +74,25 @@ EOF
 
 # ---------- print_manual_install_hint ----------
 
+@test "install_openspec: errors when npm missing" {
+  PATH="$STUB_DIR" run install_openspec
+  [ "$status" -ne 0 ]
+  [[ "$output" == *"npm not on PATH"* ]]
+}
+
+@test "install_openspec: invokes npm install -g with @fission-ai/openspec" {
+  CALLS_FILE="$TEST_HOME/npm-calls.txt"
+  cat > "$STUB_DIR/npm" <<EOF
+#!/usr/bin/env bash
+echo "\$*" >> "$CALLS_FILE"
+EOF
+  chmod +x "$STUB_DIR/npm"
+  # Keep /usr/bin + /bin on PATH so the stub's shebang (`env bash`) resolves.
+  PATH="$STUB_DIR:/usr/bin:/bin" run install_openspec
+  [ -f "$CALLS_FILE" ]
+  grep -q "install -g @fission-ai/openspec@latest" "$CALLS_FILE"
+}
+
 @test "print_manual_install_hint: prints CLI name and instruction" {
   run print_manual_install_hint "Codex CLI" "/plugins → search"
   [ "$status" -eq 0 ]
