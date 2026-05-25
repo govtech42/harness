@@ -5,6 +5,49 @@ Each entry: **what** changed, **why** it was needed, **files** touched.
 
 ---
 
+## 2026-05-25 — v0.4.0 — Obsidian vault for cli-bundle agents
+
+**What**
+- `lib/obsidian.sh` — shared helpers: `setup_vault` (creates skeleton + bashrc export + cdvault alias), `sync_vault_now` (one-shot git pull/commit/push), `sync_vault_install` (user-cron wrapper at `~/.local/bin/obsidian-vault-sync`), `sync_vault_uninstall`.
+- `profiles/cli-bundle/08-obsidian.sh` — orchestrator gated on `INSTALL_OBSIDIAN`. Runs *before* `06-mcp.sh` so the vault exists when MCP is registered.
+- `profiles/cli-bundle/06-mcp.sh` — when `INSTALL_OBSIDIAN=true`, registers an `obsidian-vault` filesystem MCP scoped to `$OBSIDIAN_VAULT_DIR`.
+- `profiles/cli-bundle/.env.example` — adds `INSTALL_OBSIDIAN`, `OBSIDIAN_VAULT_DIR`, `OBSIDIAN_VAULT_REPO`, `OBSIDIAN_VAULT_BRANCH`, `OBSIDIAN_AUTOSYNC`, `OBSIDIAN_AUTOSYNC_SCHEDULE`.
+- `profiles/cli-bundle/README.md` — full Obsidian section: layout, per-CLI access, sync, manual ops.
+- `tests/test_obsidian.bats` — 7 tests (vault skeleton, bashrc idempotency, .gitignore content, log.md preservation, sync no-op + commit behaviour).
+
+**Vault layout**
+```
+$OBSIDIAN_VAULT_DIR/
+├── .claude/log.md            # Claude Code writes here
+├── .codex/log.md             # Codex
+├── .antigravity/log.md       # Antigravity
+├── .cursor/log.md            # Cursor
+├── inbox.md                  # any agent appends
+├── notes/                    # main markdown
+├── .obsidian/app.json        # config seed (versioned if git)
+└── .gitignore                # excludes workspace.json, cache, .trash/
+```
+
+**Conflict strategy: `-X ours`**
+Auto-sync commits local edits then `git merge --no-edit -X ours origin/<branch>` before pushing. Local always wins on conflict. Chosen because multiple agents writing in parallel makes silent loss of *remote* bits less costly than losing in-flight agent work. Trade-off documented in `.claude/RECOMMENDATIONS.md`-style entry.
+
+**Why**
+- Each CLI agent kept its own context dir (`~/.claude`, `~/.codex`, etc.). Sharing thought between them required copy-paste.
+- Obsidian vault is plain markdown — works headless on a VPS without the Obsidian app, and the same files render in the desktop app on a workstation that pulls the git remote.
+- Claude Code gets first-class access via filesystem MCP scoped to the vault. Other CLIs use the `cdvault` shell alias.
+- Git sync is opt-in so single-host setups don't pay the complexity.
+
+**Files**
+- `lib/obsidian.sh` (new)
+- `profiles/cli-bundle/08-obsidian.sh` (new)
+- `profiles/cli-bundle/06-mcp.sh` (patched: registers `obsidian-vault` MCP)
+- `profiles/cli-bundle/install.sh` (patched: invokes 08 before 06)
+- `profiles/cli-bundle/.env.example` (vault knobs)
+- `profiles/cli-bundle/README.md` (Obsidian section)
+- `tests/test_obsidian.bats` (new — 7 tests)
+
+---
+
 ## 2026-05-25 — v0.3.0 — Test suite + CI/Release workflows
 
 **What**

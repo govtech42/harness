@@ -30,6 +30,14 @@
 - [ ] Per-CLI auth verification (`claude --version`, `codex --version`, etc.) gated by toggle.
 - [ ] Document tmux session naming convention when running multiple CLIs.
 
+## Obsidian vault (v0.4.0+)
+
+- [ ] Workstation-side companion: doc snippet for installing Obsidian app + git pull of the same vault.
+- [ ] Optional Local REST API integration when an Obsidian app *is* reachable (registers a richer `obsidian` MCP with search/backlinks/tags).
+- [ ] Auto-tagging convention: each agent prefixes its log entries with `#agent/claude` etc. for filter views.
+- [ ] Vault GC: prune `agents/*/log.md` entries older than N days (currently grows unbounded).
+- [ ] Conflict-aware fallback: when `-X ours` would discard >N lines, stash the remote into `conflict/<host>-<ts>` branch instead of silently dropping (escape hatch for high-volume cases).
+
 ## Launcher
 
 - [ ] `--uninstall <profile>` subcommand.
@@ -45,6 +53,15 @@
 
 ## Tests
 
-- [ ] `bash -n` syntax check in CI for every `*.sh`.
-- [ ] shellcheck pass.
-- [ ] Optional: docker-based dry-run that exercises `01-system.sh` against an Ubuntu 22.04 image.
+- [x] `bash -n` syntax check in CI for every `*.sh` (`tests/lint.sh`, v0.3.0).
+- [x] shellcheck pass (`tests/lint.sh`, v0.3.0).
+- [x] bats unit + launcher tests (`tests/test_*.bats`, v0.3.0).
+- [x] `.env.example` completeness check (`tests/check_env_completeness.sh`, v0.3.0).
+- [ ] Optional: docker-based dry-run that exercises `01-system.sh` against an Ubuntu 22.04 image (`workflow_dispatch` manual run).
+
+## CI / workflows
+
+- [ ] **GitHub Actions: bump `actions/checkout@v4` → `@v5`** when released. `@v4` runs on Node.js 20, deprecated 2026-06-02, removed 2026-09-16. Forced to Node 24 in workflow files via `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true` is the interim escape hatch.
+- [ ] Cache apt packages across CI runs (shellcheck/bats install on every job).
+- [ ] Add `concurrency:` group to cancel superseded PR builds.
+- [ ] Sign releases (sigstore or GPG).
