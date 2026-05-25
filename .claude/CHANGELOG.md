@@ -1,0 +1,156 @@
+# CHANGELOG — what was built and why
+
+Reverse-chronological log of structural changes to the harness repo.
+Each entry: **what** changed, **why** it was needed, **files** touched.
+
+---
+
+## 2026-05-25 — Real upstream commands for openclaw / hermes / paperclip
+
+**What**
+- WebFetched each upstream README and replaced TODO scaffolds with verified install/run commands.
+- `openclaw/02-openclaw.sh`: `npm i -g openclaw@<version>`, seed `~/.openclaw/openclaw.json`, optional `openclaw onboard --install-daemon`. Gateway port 18789.
+- `hermes/02-hermes.sh`: default uses upstream `curl|bash` installer from `scripts/install.sh`; opt-out via `HERMES_USE_UPSTREAM_INSTALLER=false` for git-clone + `uv venv` dev path.
+- `paperclip/02-paperclip.sh`: `git clone + pnpm install + pnpm build`, optional `npx paperclipai onboard --yes` path, optional systemd unit for API on port 3100.
+- `lib/base-packages.sh` gained `install_node <major>`, `install_pnpm <version>`, `install_uv`.
+- 3 × `01-system.sh` now call the right runtime installer (Node 22+pnpm for openclaw, Node 20+pnpm for paperclip, Python 3.11+uv for hermes).
+- 3 × `.env.example` rewritten with real knobs (version pins, ports, provider keys, channel tokens, telemetry-off defaults).
+- 3 × `README.md` rewritten with real first-run commands.
+
+**Why**
+- TODO markers in installer scripts are a foot-gun — operators copy/paste and find out at apt-time. Verifying upstream up front shrinks the "first install on a fresh VPS" risk window.
+- Each upstream uses a different runtime story (npm global vs curl|bash vs git+pnpm). Captured each in idempotent shell instead of relying on operator memory.
+- Centralising `install_node` / `install_pnpm` / `install_uv` in `lib/base-packages.sh` keeps the runtime story DRY across the four profiles.
+
+**Files**
+- `lib/base-packages.sh` (add `install_node`, `install_pnpm`, `install_uv`)
+- `profiles/openclaw/{01-system,02-openclaw}.sh`, `.env.example`, `README.md`
+- `profiles/hermes/{01-system,02-hermes}.sh`, `.env.example`, `README.md`
+- `profiles/paperclip/{01-system,02-paperclip}.sh`, `.env.example`, `README.md`
+- `.claude/TODO.md` (blockers closed)
+
+---
+
+## 2026-05-25 — Base Linux tooling + DB clients
+
+**What**
+- New `lib/base-packages.sh` exposing three reusable functions:
+  - `install_base_packages` — apt-installs the standard set of agent-host tools
+    (curl, wget, git, tmux, screen, vim, nano, jq, ripgrep, fd-find, fzf, tree,
+    htop, ncdu, unzip/zip/tar/xz/rsync, python3 + venv + pip, build-essential,
+    pkg-config, dnsutils, net-tools, lsof).
+  - `install_postgres_client` — installs `postgresql-client` (psql).
+  - `install_clickhouse_client` — adds the official ClickHouse deb repo with a
+    signed keyring and installs `clickhouse-client`.
+  - `install_db_clients` — wrapper that calls both, gated on env toggles.
+- Every profile's `01-system.sh` sources `lib/base-packages.sh` and calls
+  `install_base_packages` + `install_db_clients`.
+- All four `.env.example` files gained: `BASE_PACKAGES`, `INSTALL_DB_CLIENTS`,
+  `INSTALL_POSTGRES_CLIENT`, `INSTALL_CLICKHOUSE_CLIENT`.
+
+**Why**
+- Agents and humans both need a usable shell. The previous `01-system.sh`
+  installed only the bare minimum (`curl ca-certificates git tmux
+  build-essential jq`). Anyone debugging on the VPS missed obvious tools
+  (`rg`, `htop`, `tree`, `vim`).
+- DB clients on the harness host let agents drive remote OLTP (Postgres) and
+  OLAP (ClickHouse) directly via Bash without spinning extra containers — the
+  most common ask once an agent is live.
+- Extracting the list into `lib/` removes drift between profiles: editing one
+  function updates all four hosts.
+
+**Files**
+- `lib/base-packages.sh` (new)
+- `profiles/cli-bundle/01-system.sh` (refactor)
+- `profiles/openclaw/01-system.sh` (refactor)
+- `profiles/hermes/01-system.sh` (refactor)
+- `profiles/paperclip/01-system.sh` (refactor)
+- `profiles/*/.env.example` (append toggles)
+
+---
+
+## 2026-05-25 — Multi-profile launcher + mutex
+
+**What**
+- New top-level `install.sh` launcher: interactive menu, `<profile>` arg,
+  `--status`, `--force`.
+- New `lib/common.sh` with `load_env`, `mutex_check`, `mutex_set`, `banner`.
+- Migrated `claude-vps-setup/` to `profiles/cli-bundle/` and renumbered:
+  01-system, 02-claude, 03-codex (new), 04-antigravity (new), 05-cursor (new),
+  06-mcp, 07-dream.
+- Scaffolded three new profiles, each with `install.sh`, `01-system.sh`,
+  `02-<name>.sh`, `.env.example`, `README.md`:
+  `profiles/openclaw/`, `profiles/hermes/`, `profiles/paperclip/`.
+- Top-level `README.md` with profile matrix.
+- `.claude/PLAN.md`, `.claude/TODO.md`, `.claude/profiles/*.md`.
+
+**Why**
+- User runs four distinct VPS stacks: a CLI bundle plus three single-agent
+  hosts (OpenClaw, Hermes, Paperclip). One install script per host doesn't
+  scale; one repo with profiles does.
+- Mutex (`~/.harness-profile`) prevents accidentally co-installing
+  incompatible stacks — they share PATH, ports, and systemd unit names.
+- CLI bundle stays one profile because the four CLIs (Claude / Codex /
+  Antigravity / Cursor) are thin remote clients with disjoint config dirs and
+  no port binds.
+
+**Files**
+- `install.sh`, `lib/common.sh`, `README.md`
+- `profiles/cli-bundle/*` (migrated + extended)
+- `profiles/openclaw/*`, `profiles/hermes/*`, `profiles/paperclip/*` (new)
+- `.claude/PLAN.md`, `.claude/TODO.md`, `.claude/profiles/*.md`
+
+---
+
+## 2026-05-25 — Dream mode (memory consolidation)
+
+**What**
+- New `04-install-dream.sh` (later renumbered to `07-dream.sh`) for the
+  cli-bundle profile.
+- Generates `~/.claude/dream.sh` wrapper that calls `claude -p` headless and
+  invokes the `anthropic-skills:consolidate-memory` skill, with an inline
+  fallback prompt if the skill isn't installed.
+- Registers a user cron entry (default `0 3 * * *`).
+- Log at `~/.claude/dream.log` with self-rotation at 5 MiB.
+- `.env` toggles: `INSTALL_DREAM`, `DREAM_SCHEDULE`, `DREAM_PROMPT`.
+
+**Why**
+- Long-lived agent hosts accumulate memory files faster than they
+  consolidate them. Drift compounds: duplicate facts, stale entries,
+  index rot. A scheduled reflective pass keeps `~/.claude/memory/`
+  healthy without operator intervention.
+- "Dream" framing (madrugada / 03:00) fits the cron cadence and is
+  intuitive to operators.
+
+**Files**
+- `profiles/cli-bundle/07-dream.sh` (new)
+- `profiles/cli-bundle/install.sh` (call 07)
+- `profiles/cli-bundle/.env.example` (toggles)
+- `profiles/cli-bundle/README.md` (new section)
+
+---
+
+## 2026-05-25 — Initial cli-bundle (was claude-vps-setup)
+
+**What**
+- Three-script Claude Code installer for Ubuntu 22.04 VPS:
+  - `01-install-system.sh` — apt, Node 20.x, tmux, swap, timezone, npm prefix
+  - `02-install-claude.sh` — `@anthropic-ai/claude-code`, optional API key
+  - `03-install-mcp.sh` — MCP server registry with per-server toggles
+- One-shot `install.sh` orchestrator + `.env.example` + `README.md`.
+- `.gitignore` for `.env` and `*.tgz` backups.
+
+**Why**
+- Baseline starting point. Idempotent, opinionated, OAuth-friendly,
+  recoverable. Foundation everything else is built on.
+
+**Files**
+- `claude-vps-setup/*` (later migrated to `profiles/cli-bundle/`)
+
+---
+
+## Format
+
+When adding entries, keep them small and structured. One commit-shaped change
+per entry. The `What/Why/Files` triple keeps future readers from having to
+diff to understand intent.

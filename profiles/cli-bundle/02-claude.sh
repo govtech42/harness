@@ -16,6 +16,11 @@ fi
 # shellcheck disable=SC1090
 set -a; source "$ENV_FILE"; set +a
 
+if [[ "${INSTALL_CLAUDE:-true}" != "true" ]]; then
+  echo "==> Claude install disabled (INSTALL_CLAUDE != true). Skipping."
+  exit 0
+fi
+
 export PATH="$HOME/.npm-global/bin:$PATH"
 
 echo "==> Installing @anthropic-ai/claude-code"
@@ -34,6 +39,7 @@ else
   echo "==> No ANTHROPIC_API_KEY set. Run \`claude\` and use OAuth flow."
 fi
 
+chmod 600 "$HOME/.bashrc" 2>/dev/null || true
+
 echo
 echo "==> Claude Code installed."
-echo "    Next: bash 03-install-mcp.sh"

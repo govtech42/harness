@@ -7,6 +7,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 ENV_FILE="$SCRIPT_DIR/.env"
 
 if [[ ! -f "$ENV_FILE" ]]; then
@@ -17,15 +18,14 @@ fi
 # shellcheck disable=SC1090
 set -a; source "$ENV_FILE"; set +a
 
+# shellcheck source=../../lib/base-packages.sh
+source "$REPO_ROOT/lib/base-packages.sh"
+
 TIMEZONE="${TIMEZONE:-America/Sao_Paulo}"
 SWAP_SIZE_GB="${SWAP_SIZE_GB:-2}"
 
-echo "==> Updating apt"
-sudo apt-get update -y
-sudo apt-get upgrade -y
-
-echo "==> Installing base packages"
-sudo apt-get install -y curl ca-certificates git tmux build-essential jq
+install_base_packages
+install_db_clients
 
 echo "==> Installing Node.js 20.x"
 if ! command -v node >/dev/null 2>&1 || [[ "$(node -v | cut -d. -f1 | tr -d v)" -lt 18 ]]; then
