@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# ============================================================
+# cli-bundle/install.sh
+# Installs Claude Code + Codex + Antigravity + Cursor CLIs.
+# All four coexist on one host. Toggle individually in .env.
+# ============================================================
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+# shellcheck source=../../lib/common.sh
+source "$REPO_ROOT/lib/common.sh"
+
+FORCE="${1:-}"
+mutex_check "cli-bundle" "$FORCE"
+
+if [[ ! -f "$SCRIPT_DIR/.env" ]]; then
+  echo "ERROR: .env not found. Run: cp .env.example .env && nano .env"
+  exit 1
+fi
+chmod 600 "$SCRIPT_DIR/.env"
+
+bash "$SCRIPT_DIR/01-system.sh"
+export PATH="$HOME/.npm-global/bin:$PATH"
+
+# Per-CLI toggles read inside each script.
+bash "$SCRIPT_DIR/02-claude.sh"
+bash "$SCRIPT_DIR/03-codex.sh"
+bash "$SCRIPT_DIR/04-antigravity.sh"
+bash "$SCRIPT_DIR/05-cursor.sh"
+bash "$SCRIPT_DIR/06-mcp.sh"
+bash "$SCRIPT_DIR/07-dream.sh"
+
+mutex_set "cli-bundle"
+
+echo
+banner "cli-bundle installed. Run: source ~/.bashrc"
+echo "Then start a session, e.g.:  tmux new -s ai  &&  claude"
