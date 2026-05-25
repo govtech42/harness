@@ -15,6 +15,7 @@ SWAP_SIZE_GB="${SWAP_SIZE_GB:-2}"
 
 install_base_packages
 install_db_clients
+install_headless_browser
 
 install_node "${NODE_MAJOR:-20}"
 install_pnpm "${PNPM_VERSION:-9.15.0}"

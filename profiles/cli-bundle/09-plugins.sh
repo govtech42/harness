@@ -94,5 +94,21 @@ if [[ "${INSTALL_SUPERPOWERS:-false}" == "true" ]]; then
   fi
 fi
 
+# --- Official Anthropic marketplace plugins (Claude-only) -----------------
+# These bundle pre-configured MCP servers + skills + slash commands.
+# Richer than the raw MCP registrations in 06-mcp.sh; either can be used.
+if [[ "${INSTALL_CLAUDE:-true}" == "true" ]]; then
+  [[ "${INSTALL_LINEAR_PLUGIN:-false}"    == "true" ]] && install_official_claude_plugin linear
+  [[ "${INSTALL_SLACK_PLUGIN:-false}"     == "true" ]] && install_official_claude_plugin slack
+  [[ "${INSTALL_GITHUB_PLUGIN:-false}"    == "true" ]] && install_official_claude_plugin github
+  [[ "${INSTALL_NOTION_PLUGIN:-false}"    == "true" ]] && install_official_claude_plugin notion
+  [[ "${INSTALL_ATLASSIAN_PLUGIN:-false}" == "true" ]] && install_official_claude_plugin atlassian
+  [[ "${INSTALL_ASANA_PLUGIN:-false}"     == "true" ]] && install_official_claude_plugin asana
+  [[ "${INSTALL_FIGMA_PLUGIN:-false}"     == "true" ]] && install_official_claude_plugin figma
+  [[ "${INSTALL_SENTRY_PLUGIN:-false}"    == "true" ]] && install_official_claude_plugin sentry
+  [[ "${INSTALL_SUPABASE_PLUGIN:-false}"  == "true" ]] && install_official_claude_plugin supabase
+  [[ "${INSTALL_VERCEL_PLUGIN:-false}"    == "true" ]] && install_official_claude_plugin vercel
+fi
+
 echo
 echo "==> Plugins step complete."

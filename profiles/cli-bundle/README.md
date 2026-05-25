@@ -204,6 +204,37 @@ manual com palpite (padrão Gemini CLI). Sem tentativa automática.
 **Manual hints**: Codex/Cursor/OpenCode imprimem mensagem com comando exato
 pra colar dentro da sessão. Sem CLI flag headless documentada.
 
+### Plugins oficiais da Anthropic (Claude only)
+
+Toggles separados pra cada plugin do marketplace `claude-plugins-official`:
+```env
+INSTALL_LINEAR_PLUGIN=true        # gestão de tarefas (Linear)
+INSTALL_SLACK_PLUGIN=true         # mensagens (Slack)
+INSTALL_GITHUB_PLUGIN=true
+INSTALL_NOTION_PLUGIN=true
+INSTALL_ATLASSIAN_PLUGIN=true     # Jira/Confluence
+INSTALL_ASANA_PLUGIN=true
+INSTALL_FIGMA_PLUGIN=true
+INSTALL_SENTRY_PLUGIN=true
+INSTALL_SUPABASE_PLUGIN=true
+INSTALL_VERCEL_PLUGIN=true
+```
+Cada plugin bundla MCP server pré-configurado + skills + slash commands
+(mais rico que `INSTALL_LINEAR=true` em `06-mcp.sh`, que registra só o MCP
+cru). Ambos podem coexistir; plugin oficial recomendado.
+
+### Playwright (browser automation)
+
+Sem plugin oficial. Mantido via `INSTALL_PLAYWRIGHT=true` em `06-mcp.sh`:
+- Instala deps de sistema (`sudo npx playwright install-deps`)
+- Baixa Chromium próprio do Playwright (`npx playwright install chromium`)
+- Registra MCP `@playwright/mcp@latest`
+
+Browser headless do sistema (`chromium-browser` apt) é instalado
+separadamente em `01-system.sh` se `INSTALL_HEADLESS_BROWSER=true` (default).
+Usado por agente em shell scripts, curl, etc — independente do Chromium
+bundled do Playwright.
+
 ## Manutenção
 ```bash
 claude mcp list                  # ver registrados

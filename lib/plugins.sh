@@ -19,6 +19,16 @@ claude_headless() {
   claude -p "$prompt" --dangerously-skip-permissions
 }
 
+# Install a plugin from the official Anthropic marketplace
+# (always available; no `marketplace add` needed).
+# $1 = plugin name (e.g. "linear", "slack", "github")
+install_official_claude_plugin() {
+  local name="$1"
+  echo "==> Claude official plugin: $name"
+  claude_headless "/plugin install ${name}@claude-plugins-official"
+  claude_headless "/reload-plugins" || true
+}
+
 # Install a Claude Code plugin from a marketplace.
 # $1 = marketplace spec (e.g. "jnuyens/gsd-plugin" or "obra/superpowers-marketplace")
 # $2 = plugin spec      (e.g. "gsd@gsd-plugin" or "superpowers@claude-plugins-official")
