@@ -5,6 +5,45 @@ Each entry: **what** changed, **why** it was needed, **files** touched.
 
 ---
 
+## 2026-05-25 — v0.5.0 — OpenCode CLI + plugin marketplaces (GSD/gstack/superpowers)
+
+**What**
+- `profiles/cli-bundle/05b-opencode.sh` — installs OpenCode via upstream `curl -fsSL https://opencode.ai/install | bash`. Adds `~/.opencode/bin` and `~/.local/bin` to PATH via `~/.bashrc`. Toggle: `INSTALL_OPENCODE`.
+- `lib/base-packages.sh` — new `install_bun()` (required by gstack).
+- `lib/plugins.sh` — `claude_headless`, `install_claude_plugin`, `install_gstack_for`, `print_manual_install_hint`.
+- `profiles/cli-bundle/09-plugins.sh` — orchestrates the three plugins across the bundle.
+- `tests/test_plugins.bats` — 4 new unit tests (stubbed `claude` binary).
+- `.env.example` — toggles + per-plugin per-CLI subtoggles.
+
+**Plugin coverage matrix**
+| Plugin       | Claude   | Codex            | Antigravity                  | Cursor               | OpenCode             |
+|--------------|----------|------------------|------------------------------|----------------------|----------------------|
+| GSD          | headless | —                | —                            | —                    | —                    |
+| gstack       | headless | —                | —                            | —                    | headless (`--host opencode`) |
+| superpowers  | headless | manual `/plugins`| manual (NOT documented)      | manual `/add-plugin` | manual fetch URL     |
+
+**Decisions**
+- **Antigravity superpowers**: option (b) from prior planning — no blind attempt. Prints manual hint with a Gemini-CLI-pattern guess + warning that upstream docs don't cover Antigravity.
+- **gstack runtime**: requires Bun. `install_bun()` lives in `base-packages.sh` (reusable) rather than `plugins.sh`; only invoked when `INSTALL_GSTACK=true`.
+- **Headless plugin install for Claude**: uses `claude -p "/plugin install ..." --dangerously-skip-permissions`. Other CLIs lack equivalent flags; we deliberately do not script keystrokes against interactive prompts.
+- **gstack targets**: list-based (`GSTACK_TARGETS="claude opencode"`) instead of per-target booleans. Extensible to other supported hosts (Cursor, Codex, Hermes, etc.) without env-var explosion.
+
+**Why**
+- The three plugins shape how every CLI session behaves (slash commands, agent roles, workflows). Manual install on every fresh VPS is the worst kind of toil.
+- OpenCode joins the bundle because gstack and superpowers both support it and the install path is the same shape as the other CLIs (single curl|bash).
+
+**Files**
+- `profiles/cli-bundle/05b-opencode.sh` (new)
+- `profiles/cli-bundle/09-plugins.sh` (new)
+- `profiles/cli-bundle/install.sh` (calls 05b + 09)
+- `profiles/cli-bundle/.env.example` (`INSTALL_OPENCODE`, plugin toggles)
+- `profiles/cli-bundle/README.md` (Plugins section)
+- `lib/plugins.sh` (new)
+- `lib/base-packages.sh` (`install_bun`)
+- `tests/test_plugins.bats` (new, 4 tests)
+
+---
+
 ## 2026-05-25 — v0.4.0 — Obsidian vault for cli-bundle agents
 
 **What**

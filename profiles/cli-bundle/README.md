@@ -166,6 +166,44 @@ crontab -l | grep -v obsidian-vault-sync | crontab -
 rm ~/.local/bin/obsidian-vault-sync
 ```
 
+## Plugins (GSD, gstack, superpowers)
+
+Opt-in plugin install handled by `09-plugins.sh`. Headless onde possível;
+hint manual onde não.
+
+| Plugin       | Claude            | Codex             | Antigravity                 | Cursor            | OpenCode          |
+|--------------|-------------------|-------------------|-----------------------------|-------------------|-------------------|
+| GSD          | headless          | —                 | —                           | —                 | —                 |
+| gstack       | headless (`./setup`) | —              | —                           | —                 | headless (`./setup --host opencode`) |
+| superpowers  | headless          | manual `/plugins` | manual (não documentado)    | manual `/add-plugin` | manual fetch URL |
+
+Toggles no `.env`:
+```env
+INSTALL_GSD=true                      # Claude only
+INSTALL_GSTACK=true
+GSTACK_TARGETS="claude opencode"      # ou só "claude"
+INSTALL_SUPERPOWERS=true
+SUPERPOWERS_CLAUDE=true
+SUPERPOWERS_CODEX=true
+SUPERPOWERS_CURSOR=true
+SUPERPOWERS_OPENCODE=true
+SUPERPOWERS_ANTIGRAVITY=false         # não documentado oficialmente
+```
+
+Rodar isolado:
+```bash
+bash 09-plugins.sh
+```
+
+**Bun**: gstack precisa de Bun. `09-plugins.sh` instala via `install_bun()` se
+`INSTALL_GSTACK=true`.
+
+**Antigravity superpowers**: docs upstream não cobrem. Toggle imprime hint
+manual com palpite (padrão Gemini CLI). Sem tentativa automática.
+
+**Manual hints**: Codex/Cursor/OpenCode imprimem mensagem com comando exato
+pra colar dentro da sessão. Sem CLI flag headless documentada.
+
 ## Manutenção
 ```bash
 claude mcp list                  # ver registrados
