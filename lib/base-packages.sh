@@ -141,6 +141,33 @@ install_uv() {
 }
 
 # Convenience wrapper.
+# Install a headless-capable browser via apt. Tries chromium-browser then
+# chromium; logs a warning if neither package is reachable (some minimal
+# Ubuntu images route chromium-browser through snap and offer no apt
+# alternative — in that case Playwright's bundled Chromium covers the gap
+# when INSTALL_PLAYWRIGHT=true).
+install_headless_browser() {
+  if [[ "${INSTALL_HEADLESS_BROWSER:-true}" != "true" ]]; then
+    echo "==> Headless browser disabled (INSTALL_HEADLESS_BROWSER != true)."
+    return 0
+  fi
+  if command -v chromium-browser >/dev/null 2>&1 \
+     || command -v chromium >/dev/null 2>&1 \
+     || command -v google-chrome >/dev/null 2>&1; then
+    echo "==> Headless browser already present"
+    return 0
+  fi
+  echo "==> Installing headless browser (chromium via apt)"
+  if sudo apt-get install -y chromium-browser 2>/dev/null; then
+    return 0
+  fi
+  if sudo apt-get install -y chromium 2>/dev/null; then
+    return 0
+  fi
+  echo "WARN: no chromium apt package available."
+  echo "      Playwright's bundled Chromium will be used if INSTALL_PLAYWRIGHT=true."
+}
+
 install_db_clients() {
   if [[ "${INSTALL_DB_CLIENTS:-true}" != "true" ]]; then
     echo "==> DB clients disabled (INSTALL_DB_CLIENTS != true)."

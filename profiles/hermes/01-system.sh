@@ -15,6 +15,7 @@ SWAP_SIZE_GB="${SWAP_SIZE_GB:-2}"
 
 install_base_packages
 install_db_clients
+install_headless_browser
 
 # Hermes is Python 3.11 + uv. Python is in base packages.
 sudo apt-get install -y python3.11 python3.11-venv python3.11-dev 2>/dev/null || true

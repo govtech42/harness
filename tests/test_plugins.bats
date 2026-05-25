@@ -42,6 +42,21 @@ EOF
 
 # ---------- install_claude_plugin ----------
 
+@test "install_official_claude_plugin: install then reload, no marketplace add" {
+  CALLS_FILE="$TEST_HOME/calls.txt"
+  cat > "$STUB_DIR/claude" <<EOF
+#!/usr/bin/env bash
+shift  # drop -p
+echo "\$1" >> "$CALLS_FILE"
+EOF
+  chmod +x "$STUB_DIR/claude"
+  install_official_claude_plugin "linear"
+  [ -f "$CALLS_FILE" ]
+  grep -q "/plugin install linear@claude-plugins-official" "$CALLS_FILE"
+  grep -q "/reload-plugins" "$CALLS_FILE"
+  ! grep -q "marketplace add" "$CALLS_FILE"
+}
+
 @test "install_claude_plugin: runs marketplace add then install then reload" {
   CALLS_FILE="$TEST_HOME/calls.txt"
   cat > "$STUB_DIR/claude" <<EOF

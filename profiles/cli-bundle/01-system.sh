@@ -26,6 +26,7 @@ SWAP_SIZE_GB="${SWAP_SIZE_GB:-2}"
 
 install_base_packages
 install_db_clients
+install_headless_browser
 
 echo "==> Installing Node.js 20.x"
 if ! command -v node >/dev/null 2>&1 || [[ "$(node -v | cut -d. -f1 | tr -d v)" -lt 18 ]]; then

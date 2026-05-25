@@ -5,6 +5,39 @@ Each entry: **what** changed, **why** it was needed, **files** touched.
 
 ---
 
+## 2026-05-25 — v0.6.0 — Official plugins (Linear/Slack/etc) + headless browser as base tool
+
+**What**
+- `lib/base-packages.sh` — new `install_headless_browser()`. Tries `chromium-browser` then `chromium` apt packages; falls back to "use Playwright's bundled Chromium" warning if neither resolves. Toggle `INSTALL_HEADLESS_BROWSER` (default `true`).
+- All 4 profile `01-system.sh` scripts call `install_headless_browser` after `install_db_clients`.
+- `lib/plugins.sh` — new `install_official_claude_plugin <name>` (uses always-available `claude-plugins-official` marketplace; no `marketplace add` needed).
+- `profiles/cli-bundle/09-plugins.sh` — adds 10 official plugin toggles: `INSTALL_{LINEAR,SLACK,GITHUB,NOTION,ATLASSIAN,ASANA,FIGMA,SENTRY,SUPABASE,VERCEL}_PLUGIN`.
+- `profiles/cli-bundle/.env.example` — new `INSTALL_HEADLESS_BROWSER` (in base block) + 10 `*_PLUGIN` toggles (in plugins block).
+- `profiles/cli-bundle/README.md` — sections for official plugins + Playwright clarification.
+- `tests/test_plugins.bats` — 1 new test for `install_official_claude_plugin` (verifies install + reload, no spurious marketplace add).
+
+**Playwright**
+- No official plugin exists. Existing `INSTALL_PLAYWRIGHT=true` path in `06-mcp.sh` remains: `playwright install-deps` + bundled Chromium + `@playwright/mcp@latest`. Documented as the local-script alternative.
+
+**Why**
+- Official Anthropic-curated plugins (Linear, Slack, GitHub, Notion, Atlassian, Asana, Figma, Sentry, Supabase, Vercel) bundle pre-configured MCP + skills + slash commands. Richer than raw MCP registration alone, and `claude-plugins-official` is always available so no marketplace bootstrap step is needed.
+- Headless browser belongs in base tooling so the agent can drive curl/inspect/screenshot flows even without enabling Playwright. Playwright's own Chromium download is heavy and only worth it when Playwright MCP is on.
+
+**Coexistence of plugin vs raw MCP**
+- `INSTALL_LINEAR=true` (raw MCP via `06-mcp.sh`) and `INSTALL_LINEAR_PLUGIN=true` (official plugin via `09-plugins.sh`) can both be on. The plugin is recommended; raw MCP stays as the lightweight fallback.
+
+**Files**
+- `lib/base-packages.sh` (`install_headless_browser`)
+- `lib/plugins.sh` (`install_official_claude_plugin`)
+- `profiles/cli-bundle/09-plugins.sh` (10 toggles)
+- `profiles/cli-bundle/.env.example` (new toggles)
+- `profiles/cli-bundle/README.md` (sections)
+- `profiles/{cli-bundle,openclaw,hermes,paperclip}/01-system.sh` (`install_headless_browser` call)
+- `profiles/{cli-bundle,openclaw,hermes,paperclip}/.env.example` (`INSTALL_HEADLESS_BROWSER`)
+- `tests/test_plugins.bats` (1 new test)
+
+---
+
 ## 2026-05-25 — v0.5.0 — OpenCode CLI + plugin marketplaces (GSD/gstack/superpowers)
 
 **What**
