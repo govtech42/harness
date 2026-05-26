@@ -27,6 +27,46 @@ Each entry: **what** changed, **why** it was needed, **files** touched.
 
 ---
 
+## 2026-05-25 — v0.7.0 — Mission Control orchestration dashboard
+
+**What**
+- `lib/mission-control.sh` — `install_mission_control` (git clone + Node 22 + pnpm install + pnpm build + `.env` with auto-gen `AUTH_PASS`/`API_KEY`) and `setup_mission_control_systemd` (opt-in unit on port `MC_PORT`).
+- `profiles/openclaw/03-mission-control.sh` — wires `OPENCLAW_CONFIG_PATH` and `OPENCLAW_STATE_DIR` so the OpenClaw gateway adapter sees the local install.
+- `profiles/hermes/03-mission-control.sh`, `profiles/paperclip/03-mission-control.sh` — generic API gateway path (no native adapter).
+- `profiles/cli-bundle/10-mission-control.sh` — wires `MC_CLAUDE_HOME=~/.claude` for the Claude SDK adapter.
+- `.env.example` in all 4 profiles: new `INSTALL_MISSION_CONTROL` block (toggle, dir, port, service mode, auth user/pass/key, allowed hosts, data dir, gateway-optional flag, OpenClaw paths).
+- `tests/test_mission_control.bats` — 2 no-op tests (toggle false / toggle unset).
+
+**Why**
+- Mission Control is the natural pair to OpenClaw (first-class adapter) and a general dashboard for any agent talking over its REST API (101 endpoints). One install path, opt-in per profile.
+- Auto-generated secrets remove the worst foot-gun (default-empty-password on a public VPS). Operator can override via `MC_AUTH_PASS` / `MC_API_KEY` if they need stable values.
+- Node 22+ requirement bumped at install time (Mission Control needs Next.js 16 / React 19), separate from each profile's own Node version pin.
+
+**Files**
+- `lib/mission-control.sh` (new)
+- `profiles/openclaw/03-mission-control.sh` (new)
+- `profiles/hermes/03-mission-control.sh` (new)
+- `profiles/paperclip/03-mission-control.sh` (new)
+- `profiles/cli-bundle/10-mission-control.sh` (new)
+- `profiles/{cli-bundle,openclaw,hermes,paperclip}/install.sh` (calls the script)
+- `profiles/{cli-bundle,openclaw,hermes,paperclip}/.env.example` (`MC_*` block)
+- `tests/test_mission_control.bats` (new — 2 tests)
+
+---
+
+## 2026-05-25 — v0.6.1 — OpenSpec spec-driven dev CLI
+
+**What**
+- `lib/plugins.sh` — new `install_openspec` (npm global of `@fission-ai/openspec`).
+- `profiles/cli-bundle/09-plugins.sh` — `INSTALL_OPENSPEC` toggle. Telemetry off by default via `OPENSPEC_TELEMETRY=0` in `~/.bashrc`.
+- `.env.example` — `INSTALL_OPENSPEC`, `OPENSPEC_VERSION`, `OPENSPEC_TELEMETRY` knobs.
+- `tests/test_plugins.bats` — 2 new tests (errors when npm missing; invokes correct npm install command).
+
+**Why**
+- OpenSpec is the only spec-driven plugin in this set that runs as a standalone CLI (npm-global) rather than a Claude marketplace plugin. Once installed, every AI CLI can drive it via `/opsx:*` slash commands.
+
+---
+
 ## 2026-05-25 — v0.6.0 — Official plugins (Linear/Slack/etc) + headless browser as base tool
 
 **What**

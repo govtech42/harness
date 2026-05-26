@@ -2,3 +2,4 @@
 **/.env
 **/*.tgz
 **/.harness-profile
+.mcp.json
