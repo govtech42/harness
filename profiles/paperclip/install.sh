@@ -22,6 +22,7 @@ load_env "$SCRIPT_DIR/.env"
 
 bash "$SCRIPT_DIR/01-system.sh"
 bash "$SCRIPT_DIR/02-paperclip.sh"
+bash "$SCRIPT_DIR/03-mission-control.sh"
 
 mutex_set "paperclip"
 banner "Paperclip installed. See README.md for first-run instructions."

@@ -33,6 +33,7 @@ bash "$SCRIPT_DIR/08-obsidian.sh"   # vault skeleton first; MCP step below regis
 bash "$SCRIPT_DIR/06-mcp.sh"
 bash "$SCRIPT_DIR/07-dream.sh"
 bash "$SCRIPT_DIR/09-plugins.sh"    # plugin marketplaces (Claude headless; others manual hint)
+bash "$SCRIPT_DIR/10-mission-control.sh"  # opt-in orchestration dashboard
 
 mutex_set "cli-bundle"
 
