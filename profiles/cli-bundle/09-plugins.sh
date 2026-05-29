@@ -71,6 +71,41 @@ EOF
   fi
 fi
 
+# --- agent-skills (Tech Leads Club curated registry) ----------------------
+# Security-validated skills installed across the AI CLIs that support them.
+# Default skill set is curated for the MiranteGov / Municipium stack
+# (Next.js + React Native, NestJS + Nx monorepo, GovTech a11y + security).
+# Override AGENT_SKILLS_LIST / AGENT_SKILLS_AGENTS in .env to customize.
+if [[ "${INSTALL_AGENT_SKILLS:-false}" == "true" ]]; then
+  # Curated default set (GovTech web/mobile stack). Override in .env.
+  AGENT_SKILLS_DEFAULT="accessibility web-quality-audit react-best-practices \
+security-best-practices security-threat-model security-ownership-map \
+nestjs-modular-monolith react-native-expert gh-address-comments docs-writer \
+tactical-ddd modular-design-principles domain-analysis coupling-analysis \
+react-composition-patterns frontend-blueprint nx-workspace nx-generate \
+nx-run-tasks nx-ci-monitor gh-fix-ci mermaid-studio frontend-design \
+core-web-vitals perf-web-optimization sentry create-adr create-rfc \
+technical-design-doc-creator"
+  AGENT_SKILLS_LIST="${AGENT_SKILLS_LIST:-$AGENT_SKILLS_DEFAULT}"
+  # Only target agents that are actually installed.
+  resolved_agents=""
+  for pair in "claude-code:${INSTALL_CLAUDE:-true}" \
+              "codex:${INSTALL_CODEX:-false}" \
+              "cursor:${INSTALL_CURSOR:-false}" \
+              "opencode:${INSTALL_OPENCODE:-false}"; do
+    agent="${pair%%:*}"; enabled="${pair##*:}"
+    requested=" ${AGENT_SKILLS_AGENTS:-claude-code codex cursor opencode} "
+    if [[ "$enabled" == "true" && "$requested" == *" $agent "* ]]; then
+      resolved_agents="${resolved_agents:+$resolved_agents }$agent"
+    fi
+  done
+  if [[ -z "$resolved_agents" ]]; then
+    echo "WARN: INSTALL_AGENT_SKILLS=true but no matching CLI is installed — skipping."
+  else
+    install_agent_skills "$AGENT_SKILLS_LIST" "$resolved_agents"
+  fi
+fi
+
 # --- Official Anthropic marketplace plugins (Claude-only) -----------------
 # These bundle pre-configured MCP servers + skills + slash commands.
 # Richer than the raw MCP registrations in 06-mcp.sh; either can be used.

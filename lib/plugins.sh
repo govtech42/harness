@@ -56,6 +56,32 @@ install_openspec() {
   openspec --version 2>/dev/null || true
 }
 
+# Install Tech Leads Club agent-skills — a curated, security-validated skill
+# registry. Runs the CLI non-interactively (`install --skill … --agent …`).
+# $1 = space-separated skill names, $2 = space-separated agent identifiers.
+# Skills are installed globally (user home) so every project sees them.
+# Upstream: https://github.com/tech-leads-club/agent-skills
+install_agent_skills() {
+  local skills="$1"
+  local agents="$2"
+  if ! command -v npx >/dev/null 2>&1; then
+    echo "ERROR: npx not on PATH — agent-skills requires Node.js >= 22."
+    return 1
+  fi
+  if [[ -z "$skills" || -z "$agents" ]]; then
+    echo "WARN: no skills or agents resolved — skipping agent-skills."
+    return 0
+  fi
+  echo "==> Installing agent-skills (global) → agents: $agents"
+  echo "    skills: $skills"
+  # Intentional word-splitting: each name becomes a separate --skill/--agent arg.
+  # shellcheck disable=SC2086
+  npx --yes @tech-leads-club/agent-skills install \
+    --global \
+    --skill $skills \
+    --agent $agents
+}
+
 # Tell the operator exactly what to type into a non-headless CLI.
 print_manual_install_hint() {
   local cli="$1"

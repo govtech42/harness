@@ -186,6 +186,17 @@ supports it; printed manual hint otherwise.
 |------------------|----------|-------------------|----------------------------|----------------------|----------------------|
 | superpowers      | headless | manual `/plugins` | manual (not documented)    | manual `/add-plugin` | manual fetch URL     |
 | **OpenSpec**     | universal (npm global, `/opsx:*` slash commands from any CLI) — invoked via `openspec init` per project |
+| **agent-skills** | non-interactive CLI install across claude-code / codex / cursor / opencode — curated, security-validated skill registry |
+
+### agent-skills (Tech Leads Club)
+
+[agent-skills](https://github.com/tech-leads-club/agent-skills) is a curated,
+security-validated skill registry. `INSTALL_AGENT_SKILLS=true` installs a
+default set tuned for web/mobile product work (Next.js + React Native, NestJS +
+Nx monorepo, accessibility + security) globally to every installed CLI that
+supports it. Override the skill list with `AGENT_SKILLS_LIST` and the target
+CLIs with `AGENT_SKILLS_AGENTS` in `.env`. Browse the catalog with
+`npx @tech-leads-club/agent-skills list`.
 
 Plus the **official Anthropic marketplace** (Claude-only, bundles pre-configured MCP + skills + slash commands):
 
