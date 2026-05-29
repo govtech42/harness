@@ -219,6 +219,39 @@ openspec init
 #   /opsx:plan
 ```
 
+### agent-skills (Tech Leads Club — registry curado)
+
+[agent-skills](https://github.com/tech-leads-club/agent-skills) é um registry
+de skills validadas por segurança, instaladas via CLI npm não-interativo
+(`agent-skills install --skill … --agent …`). Com `INSTALL_AGENT_SKILLS=true`,
+o `09-plugins.sh` instala globalmente (no `$HOME`) um conjunto curado para o
+stack dos produtos (Next.js + React Native, NestJS + Nx monorepo, e foco
+GovTech em acessibilidade + segurança) em todos os CLIs instalados que o
+suportam — `claude-code`, `codex`, `cursor`, `opencode`. Apenas os CLIs de
+fato instalados são alvo.
+
+```env
+INSTALL_AGENT_SKILLS=true
+AGENT_SKILLS_AGENTS=claude-code codex cursor opencode   # subconjunto
+AGENT_SKILLS_LIST=                                       # vazio = set curado
+```
+
+Conjunto curado padrão (29 skills): accessibility, web-quality-audit,
+react-best-practices, security-best-practices, security-threat-model,
+security-ownership-map, nestjs-modular-monolith, react-native-expert,
+gh-address-comments, docs-writer, tactical-ddd, modular-design-principles,
+domain-analysis, coupling-analysis, react-composition-patterns,
+frontend-blueprint, nx-workspace, nx-generate, nx-run-tasks, nx-ci-monitor,
+gh-fix-ci, mermaid-studio, frontend-design, core-web-vitals,
+perf-web-optimization, sentry, create-adr, create-rfc,
+technical-design-doc-creator.
+
+Para customizar, defina `AGENT_SKILLS_LIST` com uma lista separada por
+espaços. Veja o catálogo completo com:
+```bash
+npx @tech-leads-club/agent-skills list
+```
+
 ### Plugins oficiais da Anthropic (Claude only)
 
 Toggles separados pra cada plugin do marketplace `claude-plugins-official`:
