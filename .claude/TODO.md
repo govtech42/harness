@@ -2,6 +2,18 @@
 
 > Changelog of structural decisions lives in [CHANGELOG.md](CHANGELOG.md).
 
+## Radar (evaluate / test later — not yet committed to a profile)
+
+- [ ] **Hindsight** (vectorize-io) — agent memory system: agents that learn and
+      adapt over time (mental models, experience understanding), beyond plain
+      conversation-history recall. Python + TypeScript, MIT.
+      Install paths: Docker (`ghcr.io/vectorize-io/hindsight:latest`),
+      pip (`hindsight-client`), npm (`@vectorize-io/hindsight-client`); also
+      supports embedded Python use without a server.
+      Same category as OpenViking — evaluate as an alternative/complement memory
+      backend for the cli-bundle agents (esp. Claude Code / MiranteGov /
+      Municipium). Upstream: https://github.com/vectorize-io/hindsight
+
 ## Blockers (must resolve before real-VPS install)
 
 - [x] **openclaw/02-openclaw.sh** — upstream is `npm i -g openclaw`. Replaced.
