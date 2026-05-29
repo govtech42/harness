@@ -110,6 +110,37 @@ crontab -l | grep -v claude-dream | crontab -
 rm ~/.claude/dream.sh
 ```
 
+## Hindsight (memória de agentes — protótipo, opt-in)
+
+[Hindsight](https://github.com/vectorize-io/hindsight) é um sistema de memória
+de agentes (mesma categoria do OpenViking), com biblioteca cliente + servidor
+Dockerizado (API `:8888`, UI `:9999`). Passo `05d-hindsight.sh`, **desligado por
+padrão** — adicionado para avaliarmos depois.
+
+```env
+INSTALL_HINDSIGHT=true            # liga o passo
+HINDSIGHT_NPM_CLIENT=true         # instala @vectorize-io/hindsight-client (npm)
+HINDSIGHT_PIP_CLIENT=false        # instala hindsight-client (pipx/pip --user)
+HINDSIGHT_START_SERVER=false      # sobe o servidor via Docker no install
+HINDSIGHT_LLM_PROVIDER=openai     # openai|anthropic|gemini|groq|ollama|lmstudio|minimax
+HINDSIGHT_LLM_API_KEY=            # chave do provider (necessária p/ subir o servidor)
+```
+
+O passo instala o cliente e, se `HINDSIGHT_START_SERVER=true` **e** o Docker
+estiver presente **e** houver `HINDSIGHT_LLM_API_KEY`, sobe o servidor:
+```bash
+docker run --rm -d --pull always -p 8888:8888 -p 9999:9999 \
+  -e HINDSIGHT_API_LLM_PROVIDER=openai \
+  -e HINDSIGHT_API_LLM_API_KEY=<sua-key> \
+  -v $HOME/.hindsight-docker:/home/hindsight/.pg0 \
+  ghcr.io/vectorize-io/hindsight:latest
+```
+Caso contrário, apenas imprime o comando para você subir manualmente depois.
+A API fica em `http://localhost:8888` e a UI em `http://localhost:9999`.
+
+> ⚠️ Protótipo: ainda não integrado ao Claude Code como backend de memória —
+> serve para testes comparativos com o OpenViking.
+
 ## Obsidian vault (workspace compartilhado entre CLIs)
 
 Vault único em `$OBSIDIAN_VAULT_DIR` (default `~/vault`) que todos os CLIs

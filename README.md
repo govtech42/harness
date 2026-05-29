@@ -54,7 +54,8 @@ harness/
 │                              # print_manual_install_hint
 └── profiles/
     ├── cli-bundle/            # 01-system → 02-claude → 03-codex → 04-antigravity
-    │                          # → 05-cursor → 05b-opencode → 05c-openviking → 08-obsidian
+    │                          # → 05-cursor → 05b-opencode → 05c-openviking
+    │                          # → 05d-hindsight → 08-obsidian
     │                          # → 06-mcp → 07-dream → 09-plugins
     ├── openclaw/              # 01-system → 02-openclaw
     ├── hermes/                # 01-system → 02-hermes
@@ -159,6 +160,12 @@ Plus:
 - **Obsidian vault** (`08-obsidian.sh`) — shared workspace for every CLI.
 - **Dream mode** (`07-dream.sh`) — cron-driven `claude -p` invocation of
   `anthropic-skills:consolidate-memory` at `03:00`; log auto-rotates at 5 MiB.
+- **Hindsight** (`05d-hindsight.sh`, _prototype, opt-in_) — agent-memory
+  client lib (`@vectorize-io/hindsight-client`) and an optional Dockerized
+  server (API `:8888`, UI `:9999`). Enable with `INSTALL_HINDSIGHT=true`;
+  start the server with `HINDSIGHT_START_SERVER=true` (needs Docker + an LLM
+  key). Tracked alongside OpenViking as an agent-memory backend to evaluate.
+  Upstream: <https://github.com/vectorize-io/hindsight>
 
 Full docs: [profiles/cli-bundle/README.md](profiles/cli-bundle/README.md).
 
