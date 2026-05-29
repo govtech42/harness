@@ -30,8 +30,8 @@ install_official_claude_plugin() {
 }
 
 # Install a Claude Code plugin from a marketplace.
-# $1 = marketplace spec (e.g. "jnuyens/gsd-plugin" or "obra/superpowers-marketplace")
-# $2 = plugin spec      (e.g. "gsd@gsd-plugin" or "superpowers@claude-plugins-official")
+# $1 = marketplace spec (e.g. "obra/superpowers-marketplace")
+# $2 = plugin spec      (e.g. "superpowers@superpowers-marketplace")
 install_claude_plugin() {
   local marketplace="$1"
   local plugin="$2"
@@ -54,34 +54,6 @@ install_openspec() {
   echo "==> Installing @fission-ai/openspec@${version} globally"
   npm install -g "@fission-ai/openspec@${version}"
   openspec --version 2>/dev/null || true
-}
-
-# Install gstack into a target CLI's skills dir.
-# $1 = host name (claude, opencode, etc.)
-install_gstack_for() {
-  local host="$1"
-  local target_dir="$HOME/.${host}/skills/gstack"
-  echo "==> Installing gstack for $host → $target_dir"
-
-  if [[ -d "$target_dir/.git" ]]; then
-    git -C "$target_dir" fetch --depth 1 origin
-    git -C "$target_dir" reset --hard origin/HEAD
-  else
-    git clone --single-branch --depth 1 \
-      https://github.com/garrytan/gstack.git "$target_dir"
-  fi
-
-  pushd "$target_dir" >/dev/null || return 1
-  if [[ -x ./setup ]]; then
-    if [[ "$host" == "claude" ]]; then
-      ./setup
-    else
-      ./setup --host "$host"
-    fi
-  else
-    echo "WARN: gstack/setup not found or not executable"
-  fi
-  popd >/dev/null || return 1
 }
 
 # Tell the operator exactly what to type into a non-headless CLI.

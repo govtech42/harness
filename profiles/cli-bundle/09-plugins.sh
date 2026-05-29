@@ -1,10 +1,8 @@
 #!/usr/bin/env bash
 # ============================================================
-# 09-plugins.sh — install GSD, gstack, superpowers across the CLIs.
+# 09-plugins.sh — install superpowers + OpenSpec + official plugins.
 #
 # Coverage matrix:
-#   GSD          → Claude only
-#   gstack       → Claude, OpenCode (and any host listed in GSTACK_TARGETS)
 #   superpowers  → Claude (headless), Codex/Cursor/OpenCode (manual hints),
 #                  Antigravity (option (b) per RECOMMENDATIONS: no attempt,
 #                  just print hint with the warning that it is not officially
@@ -26,42 +24,8 @@ set -a; source "$ENV_FILE"; set +a
 
 # shellcheck source=../../lib/plugins.sh
 source "$REPO_ROOT/lib/plugins.sh"
-# shellcheck source=../../lib/base-packages.sh
-source "$REPO_ROOT/lib/base-packages.sh"
 
-export PATH="$HOME/.npm-global/bin:$HOME/.local/bin:$HOME/.opencode/bin:$HOME/.bun/bin:$PATH"
-
-# --- GSD (Claude only) ----------------------------------------------------
-if [[ "${INSTALL_GSD:-false}" == "true" ]]; then
-  if [[ "${INSTALL_CLAUDE:-true}" != "true" ]]; then
-    echo "WARN: INSTALL_GSD=true but Claude not installed — skipping."
-  else
-    install_claude_plugin "jnuyens/gsd-plugin" "gsd@gsd-plugin"
-  fi
-fi
-
-# --- gstack (Claude + any host in GSTACK_TARGETS) -------------------------
-if [[ "${INSTALL_GSTACK:-false}" == "true" ]]; then
-  install_bun
-  TARGETS="${GSTACK_TARGETS:-claude}"
-  for host in $TARGETS; do
-    case "$host" in
-      claude)
-        if [[ "${INSTALL_CLAUDE:-true}" != "true" ]]; then
-          echo "WARN: gstack target 'claude' requested but INSTALL_CLAUDE != true. Skipping."
-          continue
-        fi
-        ;;
-      opencode)
-        if [[ "${INSTALL_OPENCODE:-false}" != "true" ]]; then
-          echo "WARN: gstack target 'opencode' requested but INSTALL_OPENCODE != true. Skipping."
-          continue
-        fi
-        ;;
-    esac
-    install_gstack_for "$host"
-  done
-fi
+export PATH="$HOME/.npm-global/bin:$HOME/.local/bin:$HOME/.opencode/bin:$PATH"
 
 # --- superpowers (multi-CLI) ----------------------------------------------
 if [[ "${INSTALL_SUPERPOWERS:-false}" == "true" ]]; then
