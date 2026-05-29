@@ -166,22 +166,17 @@ crontab -l | grep -v obsidian-vault-sync | crontab -
 rm ~/.local/bin/obsidian-vault-sync
 ```
 
-## Plugins (GSD, gstack, superpowers)
+## Plugins (superpowers, OpenSpec)
 
 Opt-in plugin install handled by `09-plugins.sh`. Headless onde possível;
 hint manual onde não.
 
 | Plugin       | Claude            | Codex             | Antigravity                 | Cursor            | OpenCode          |
 |--------------|-------------------|-------------------|-----------------------------|-------------------|-------------------|
-| GSD          | headless          | —                 | —                           | —                 | —                 |
-| gstack       | headless (`./setup`) | —              | —                           | —                 | headless (`./setup --host opencode`) |
 | superpowers  | headless          | manual `/plugins` | manual (não documentado)    | manual `/add-plugin` | manual fetch URL |
 
 Toggles no `.env`:
 ```env
-INSTALL_GSD=true                      # Claude only
-INSTALL_GSTACK=true
-GSTACK_TARGETS="claude opencode"      # ou só "claude"
 INSTALL_SUPERPOWERS=true
 SUPERPOWERS_CLAUDE=true
 SUPERPOWERS_CODEX=true
@@ -194,9 +189,6 @@ Rodar isolado:
 ```bash
 bash 09-plugins.sh
 ```
-
-**Bun**: gstack precisa de Bun. `09-plugins.sh` instala via `install_bun()` se
-`INSTALL_GSTACK=true`.
 
 **Antigravity superpowers**: docs upstream não cobrem. Toggle imprime hint
 manual com palpite (padrão Gemini CLI). Sem tentativa automática.

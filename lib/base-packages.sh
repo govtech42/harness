@@ -110,25 +110,6 @@ install_pnpm() {
   pnpm -v
 }
 
-# Install Bun (JS runtime; required by gstack plugin).
-install_bun() {
-  if command -v bun >/dev/null 2>&1; then
-    echo "==> bun $(bun --version) already installed"
-    return 0
-  fi
-  echo "==> Installing bun (bun.sh)"
-  curl -fsSL https://bun.sh/install | bash
-  export PATH="$HOME/.bun/bin:$PATH"
-  if ! grep -q 'BUN_INSTALL' "$HOME/.bashrc" 2>/dev/null; then
-    cat >> "$HOME/.bashrc" <<'EOF'
-
-# Bun
-export BUN_INSTALL="$HOME/.bun"
-case ":$PATH:" in *":$BUN_INSTALL/bin:"*) ;; *) export PATH="$BUN_INSTALL/bin:$PATH";; esac
-EOF
-  fi
-}
-
 # Install uv (Python package manager used by Hermes).
 install_uv() {
   if command -v uv >/dev/null 2>&1; then

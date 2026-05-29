@@ -34,7 +34,7 @@ Plus, on every profile:
 `cli-bundle` additionally bundles:
 
 - **MCP servers** for Claude (Context7, Linear, Slack, GitHub, Supabase, Sentry, Notion, Playwright, Filesystem, Obsidian)
-- **Plugins** — GSD, gstack, superpowers, OpenSpec, plus the official Anthropic marketplace (Linear/Slack/GitHub/Notion/Atlassian/Asana/Figma/Sentry/Supabase/Vercel)
+- **Plugins** — superpowers, OpenSpec, plus the official Anthropic marketplace (Linear/Slack/GitHub/Notion/Atlassian/Asana/Figma/Sentry/Supabase/Vercel)
 - **Obsidian vault** — shared workspace at `$OBSIDIAN_VAULT_DIR`, all CLIs read/write, optional git auto-sync
 - **Dream mode** — cron-driven memory consolidation for Claude
 
@@ -47,11 +47,11 @@ harness/
 │   ├── common.sh              # mutex_check, mutex_set, load_env, banner
 │   ├── base-packages.sh       # install_base_packages, install_db_clients,
 │   │                          # install_headless_browser, install_node,
-│   │                          # install_pnpm, install_bun, install_uv
+│   │                          # install_pnpm, install_uv
 │   ├── obsidian.sh            # setup_vault, sync_vault_now/install/uninstall
 │   └── plugins.sh             # claude_headless, install_official_claude_plugin,
 │                              # install_claude_plugin, install_openspec,
-│                              # install_gstack_for, print_manual_install_hint
+│                              # print_manual_install_hint
 └── profiles/
     ├── cli-bundle/            # 01-system → 02-claude → 03-codex → 04-antigravity
     │                          # → 05-cursor → 05b-opencode → 05c-openviking → 08-obsidian
@@ -184,8 +184,6 @@ supports it; printed manual hint otherwise.
 
 | Plugin           | Claude   | Codex             | Antigravity                | Cursor               | OpenCode             |
 |------------------|----------|-------------------|----------------------------|----------------------|----------------------|
-| GSD              | headless | —                 | —                          | —                    | —                    |
-| gstack           | headless | —                 | —                          | —                    | headless             |
 | superpowers      | headless | manual `/plugins` | manual (not documented)    | manual `/add-plugin` | manual fetch URL     |
 | **OpenSpec**     | universal (npm global, `/opsx:*` slash commands from any CLI) — invoked via `openspec init` per project |
 

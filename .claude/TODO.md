@@ -33,8 +33,6 @@
 ## Plugins (v0.5.0+)
 
 - [ ] **Antigravity + superpowers**: confirm whether `antigravity extensions install <url>` is a real command. Replace manual hint with headless install if confirmed.
-- [ ] gstack `./setup` — confirm non-interactive behaviour on fresh box (`--yes`-style flag?). Currently we assume it runs cleanly without prompts.
-- [ ] GSD: legacy npm package conflict check (`get-shit-done-cc`, `get-shit-done-redux`) — auto-uninstall in 09-plugins.sh if found.
 - [ ] Superpowers OpenCode install is "fetch instructions" — investigate whether OpenCode has a headless prompt API to drive it programmatically.
 - [ ] Plugin verification: after install, run a sanity check (e.g. `claude -p "/plugin list"` and grep for the installed names).
 
