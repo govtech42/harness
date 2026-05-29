@@ -18,7 +18,7 @@ fully configured, in a single command:
 
 | Profile      | What you get                                                                                          |
 |--------------|-------------------------------------------------------------------------------------------------------|
-| `cli-bundle` | Claude Code + OpenAI Codex + Google Antigravity + Cursor + **OpenCode** CLIs (any combination)        |
+| `cli-bundle` | Claude Code + OpenAI Codex + Google Antigravity + Cursor + **OpenCode** + **OpenViking** CLIs (any combination) |
 | `openclaw`   | [OpenClaw](https://github.com/openclaw/openclaw) — local agent gateway on port `18789`                |
 | `hermes`     | [Hermes Agent](https://github.com/NousResearch/hermes-agent) (Nous Research, Python+uv)               |
 | `paperclip`  | [Paperclip](https://github.com/paperclipai/paperclip) — Node API + embedded Postgres :3100            |
@@ -54,7 +54,7 @@ harness/
 │                              # install_gstack_for, print_manual_install_hint
 └── profiles/
     ├── cli-bundle/            # 01-system → 02-claude → 03-codex → 04-antigravity
-    │                          # → 05-cursor → 05b-opencode → 08-obsidian
+    │                          # → 05-cursor → 05b-opencode → 05c-openviking → 08-obsidian
     │                          # → 06-mcp → 07-dream → 09-plugins
     ├── openclaw/              # 01-system → 02-openclaw
     ├── hermes/                # 01-system → 02-hermes
@@ -121,9 +121,9 @@ Why: these stacks compete for PATH entries, ports, systemd unit names, and
 memory on small VPSes. Coexistence isn't supported. If you *really* know
 better, `--force` bypasses the check.
 
-The `cli-bundle` profile is the exception: it intentionally stacks **five**
-thin CLI clients (Claude, Codex, Antigravity, Cursor, OpenCode) which have
-disjoint config dirs and no port binds.
+The `cli-bundle` profile is the exception: it intentionally stacks **six**
+thin CLI clients (Claude, Codex, Antigravity, Cursor, OpenCode, OpenViking)
+which have disjoint config dirs and no port binds.
 
 ## Pre-requisites
 
@@ -140,7 +140,7 @@ disjoint config dirs and no port binds.
 
 ### `cli-bundle`
 
-Five CLIs — toggle each in `.env`. Defaults: Claude `true`, others `false`.
+Six CLIs — toggle each in `.env`. Defaults: Claude `true`, others `false`.
 
 | Toggle                 | CLI                  | Install path                                          |
 |------------------------|----------------------|-------------------------------------------------------|
@@ -149,6 +149,7 @@ Five CLIs — toggle each in `.env`. Defaults: Claude `true`, others `false`.
 | `INSTALL_ANTIGRAVITY`  | Google Antigravity   | upstream installer (`curl … \| bash`)                 |
 | `INSTALL_CURSOR`       | Cursor agent         | upstream installer (`curl … \| bash`)                 |
 | `INSTALL_OPENCODE`     | OpenCode             | upstream installer (`curl -fsSL https://opencode.ai/install \| bash`) |
+| `INSTALL_OPENVIKING`   | OpenViking (`ov`)    | `npm i -g @openviking/cli`                            |
 
 Plus:
 

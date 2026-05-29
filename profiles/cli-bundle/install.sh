@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # ============================================================
 # cli-bundle/install.sh
-# Installs Claude Code + Codex + Antigravity + Cursor CLIs.
-# All four coexist on one host. Toggle individually in .env.
+# Installs Claude Code + Codex + Antigravity + Cursor + OpenCode + OpenViking CLIs.
+# All coexist on one host. Toggle individually in .env.
 # ============================================================
 set -euo pipefail
 
@@ -29,6 +29,7 @@ bash "$SCRIPT_DIR/03-codex.sh"
 bash "$SCRIPT_DIR/04-antigravity.sh"
 bash "$SCRIPT_DIR/05-cursor.sh"
 bash "$SCRIPT_DIR/05b-opencode.sh"
+bash "$SCRIPT_DIR/05c-openviking.sh"
 bash "$SCRIPT_DIR/08-obsidian.sh"   # vault skeleton first; MCP step below registers it
 bash "$SCRIPT_DIR/06-mcp.sh"
 bash "$SCRIPT_DIR/07-dream.sh"
